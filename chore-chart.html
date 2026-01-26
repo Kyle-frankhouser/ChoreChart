@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, orientation=landscape">
+    <title>Chore Chart</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 15px;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .date-info {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1em;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .export-import-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .export-btn, .import-btn {
+            padding: 12px 24px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .export-btn {
+            background: #28a745;
+        }
+
+        .export-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        .import-btn {
+            background: #17a2b8;
+        }
+
+        .import-btn:hover {
+            background: #138496;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        .edit-btn {
+            padding: 12px 24px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: #ffc107;
+        }
+
+        .edit-btn:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        .edit-btn.active {
+            background: #fd7e14;
+        }
+
+        .edit-btn.active:hover {
+            background: #e8590c;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .chore-list {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 250px;
+        }
+
+        .chore-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .chore-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .chore-item.completed {
+            background: #d4edda;
+            opacity: 0.8;
+        }
+
+        .chore-item input[type="checkbox"] {
+            width: 25px;
+            height: 25px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #667eea;
+            flex-shrink: 0;
+        }
+
+        .chore-item label {
+            flex: 1;
+            font-size: 1.1em;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .add-chore {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        body.edit-mode .add-chore {
+            display: flex;
+        }
+
+        .add-chore input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+
+        .add-chore button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+
+        .add-chore button:hover {
+            background: #5568d3;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-left: 10px;
+            flex-shrink: 0;
+            display: none;
+        }
+
+        body.edit-mode .delete-btn {
+            display: block;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        /* iPad landscape optimization */
+        @media (min-width: 768px) and (orientation: landscape) {
+            body {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2.5em;
+                margin-bottom: 20px;
+            }
+
+            .date-info {
+                padding: 12px;
+                font-size: 1.1em;
+                margin-bottom: 20px;
+            }
+
+            .grid-container {
+                gap: 20px;
+            }
+
+            .section {
+                padding: 25px;
+            }
+
+            .section h2 {
+                font-size: 1.6em;
+            }
+
+            .chore-list {
+                max-height: 300px;
+            }
+        }
+
+        /* Scrollbar styling */
+        .chore-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chore-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .chore-list::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .chore-list::-webkit-scrollbar-thumb:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 Chore Chart</h1>
+        
+        <div class="export-import-buttons">
+            <button class="export-btn" onclick="exportChores()">📥 Export Chores</button>
+            <button class="import-btn" onclick="importChores()">📤 Import Chores</button>
+            <button class="edit-btn" id="editBtn" onclick="toggleEditMode()">✏️ Edit Mode</button>
+        </div>
+
+        <div class="date-info" id="dateInfo"></div>
+
+        <div class="grid-container">
+            <div class="section">
+                <h2 id="weeklyHeader">📅 Weekly Chores</h2>
+                <div class="chore-list" id="weeklyChores"></div>
+                <div class="add-chore">
+                    <input type="text" id="weeklyInput" placeholder="Add new weekly chore...">
+                    <button onclick="addChore('weekly')">Add</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 id="biweeklyHeader">📆 Bi-Weekly Chores</h2>
+                <div class="chore-list" id="biweeklyChores"></div>
+                <div class="add-chore">
+                    <input type="text" id="biweeklyInput" placeholder="Add new bi-weekly chore...">
+                    <button onclick="addChore('biweekly')">Add</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 id="monthlyHeader">📋 Monthly Chores</h2>
+                <div class="chore-list" id="monthlyChores"></div>
+                <div class="add-chore">
+                    <input type="text" id="monthlyInput" placeholder="Add new monthly chore...">
+                    <button onclick="addChore('monthly')">Add</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 id="sixmonthHeader">📊 Six-Month Chores</h2>
+                <div class="chore-list" id="sixmonthChores"></div>
+                <div class="add-chore">
+                    <input type="text" id="sixmonthInput" placeholder="Add new six-month chore...">
+                    <button onclick="addChore('sixmonth')">Add</button>
+                </div>
+            </div>
+
+            <div class="section full-width">
+                <h2 id="yearlyHeader">🎯 Yearly Chores</h2>
+                <div class="chore-list" id="yearlyChores"></div>
+                <div class="add-chore">
+                    <input type="text" id="yearlyInput" placeholder="Add new yearly chore...">
+                    <button onclick="addChore('yearly')">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default chores (customize these)
+        const defaultChores = {
+            weekly: ['Vacuum floors', 'Clean bathrooms', 'Wash sheets'],
+            biweekly: ['Mop floors', 'Clean windows', 'Dust furniture'],
+            monthly: ['Deep clean kitchen', 'Organize garage', 'Clean refrigerator'],
+            sixmonth: ['Clean gutters', 'HVAC filter change', 'Deep clean carpets'],
+            yearly: ['Pressure wash deck', 'Service HVAC', 'Deep clean garage']
+        };
+
+        // Load chores from localStorage or use defaults
+        let chores = JSON.parse(localStorage.getItem('chores')) || defaultChores;
+        let choreStates = JSON.parse(localStorage.getItem('choreStates')) || {};
+        let lastReset = JSON.parse(localStorage.getItem('lastReset')) || {};
+        let editMode = false;
+
+        function getWeekNumber(date) {
+            const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+            const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+            return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+        }
+
+        function shouldReset(interval, lastResetDate) {
+            if (!lastResetDate) return true;
+            
+            const now = new Date();
+            const lastDate = new Date(lastResetDate);
+            
+            switch(interval) {
+                case 'weekly':
+                    // Reset every Monday
+                    return now.getDay() === 1 && now.toDateString() !== lastDate.toDateString();
+                case 'biweekly':
+                    const weeksDiff = Math.floor((now - lastDate) / (7 * 24 * 60 * 60 * 1000));
+                    return weeksDiff >= 2 && now.getDay() === 1;
+                case 'monthly':
+                    return now.getMonth() !== lastDate.getMonth() || now.getFullYear() !== lastDate.getFullYear();
+                case 'sixmonth':
+                    const monthsDiff = (now.getFullYear() - lastDate.getFullYear()) * 12 + (now.getMonth() - lastDate.getMonth());
+                    return monthsDiff >= 6;
+                case 'yearly':
+                    return now.getFullYear() !== lastDate.getFullYear();
+                default:
+                    return false;
+            }
+        }
+
+        function checkAndResetChores() {
+            let resetOccurred = false;
+            
+            Object.keys(chores).forEach(interval => {
+                if (shouldReset(interval, lastReset[interval])) {
+                    // Reset all chores in this interval
+                    chores[interval].forEach((_, index) => {
+                        const key = `${interval}-${index}`;
+                        choreStates[key] = false;
+                    });
+                    lastReset[interval] = new Date().toISOString();
+                    resetOccurred = true;
+                }
+            });
+            
+            if (resetOccurred) {
+                saveData();
+            }
+        }
+
+        function renderChores() {
+            Object.keys(chores).forEach(interval => {
+                const container = document.getElementById(`${interval}Chores`);
+                container.innerHTML = '';
+                
+                chores[interval].forEach((chore, index) => {
+                    const key = `${interval}-${index}`;
+                    const isChecked = choreStates[key] || false;
+                    
+                    const div = document.createElement('div');
+                    div.className = `chore-item ${isChecked ? 'completed' : ''}`;
+                    div.innerHTML = `
+                        <input type="checkbox" id="${key}" ${isChecked ? 'checked' : ''} 
+                               onchange="toggleChore('${interval}', ${index})">
+                        <label for="${key}">${chore}</label>
+                        <button class="delete-btn" onclick="deleteChore('${interval}', ${index})">Delete</button>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+        }
+
+        function toggleChore(interval, index) {
+            const key = `${interval}-${index}`;
+            choreStates[key] = !choreStates[key];
+            saveData();
+            renderChores();
+        }
+
+        function addChore(interval) {
+            const input = document.getElementById(`${interval}Input`);
+            const choreName = input.value.trim();
+            
+            if (choreName) {
+                chores[interval].push(choreName);
+                input.value = '';
+                saveData();
+                renderChores();
+            }
+        }
+
+        function deleteChore(interval, index) {
+            if (confirm('Are you sure you want to delete this chore?')) {
+                chores[interval].splice(index, 1);
+                // Rebuild choreStates for this interval
+                const newStates = {};
+                Object.keys(choreStates).forEach(key => {
+                    if (!key.startsWith(interval)) {
+                        newStates[key] = choreStates[key];
+                    }
+                });
+                choreStates = newStates;
+                saveData();
+                renderChores();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('chores', JSON.stringify(chores));
+            localStorage.setItem('choreStates', JSON.stringify(choreStates));
+            localStorage.setItem('lastReset', JSON.stringify(lastReset));
+        }
+
+        function toggleEditMode() {
+            editMode = !editMode;
+            document.body.classList.toggle('edit-mode', editMode);
+            const editBtn = document.getElementById('editBtn');
+            editBtn.classList.toggle('active', editMode);
+            editBtn.textContent = editMode ? '✅ Done Editing' : '✏️ Edit Mode';
+        }
+
+        function exportChores() {
+            const exportData = {
+                chores: chores,
+                choreStates: choreStates,
+                lastReset: lastReset,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `chore-chart-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('Chores exported successfully!');
+        }
+
+        function importChores() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const importData = JSON.parse(event.target.result);
+                        
+                        // Validate the imported data structure
+                        if (!importData.chores || typeof importData.chores !== 'object') {
+                            throw new Error('Invalid chore data format');
+                        }
+                        
+                        // Restore data
+                        chores = importData.chores;
+                        choreStates = importData.choreStates || {};
+                        lastReset = importData.lastReset || {};
+                        
+                        // Save to localStorage
+                        saveData();
+                        
+                        // Re-render
+                        renderChores();
+                        updateDateInfo();
+                        
+                        alert('Chores imported successfully!');
+                    } catch (error) {
+                        alert('Error importing chores: ' + error.message + '\n\nPlease make sure you selected a valid chore chart backup file.');
+                        console.error('Import error:', error);
+                    }
+                };
+                
+                reader.onerror = () => {
+                    alert('Error reading file. Please try again.');
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        function getTimeframeText(interval) {
+            const now = new Date();
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            switch(interval) {
+                case 'weekly':
+                    // Get the Monday of current week
+                    const dayOfWeek = now.getDay();
+                    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Adjust for Sunday
+                    const monday = new Date(now);
+                    monday.setDate(now.getDate() + diff);
+                    
+                    const sunday = new Date(monday);
+                    sunday.setDate(monday.getDate() + 6);
+                    
+                    const weekMonth = monthNames[monday.getMonth()];
+                    return `${weekMonth} ${monday.getDate()}-${sunday.getDate()}`;
+                    
+                case 'biweekly':
+                    // Get the Monday of current week
+                    const currentDay = now.getDay();
+                    const mondayDiff = currentDay === 0 ? -6 : 1 - currentDay;
+                    const biweekStart = new Date(now);
+                    biweekStart.setDate(now.getDate() + mondayDiff);
+                    
+                    const biweekEnd = new Date(biweekStart);
+                    biweekEnd.setDate(biweekStart.getDate() + 13); // 2 weeks = 14 days
+                    
+                    const startMonth = monthNames[biweekStart.getMonth()];
+                    const endMonth = monthNames[biweekEnd.getMonth()];
+                    
+                    if (startMonth === endMonth) {
+                        return `${startMonth} ${biweekStart.getDate()}-${biweekEnd.getDate()}`;
+                    } else {
+                        return `${startMonth} ${biweekStart.getDate()} - ${endMonth} ${biweekEnd.getDate()}`;
+                    }
+                    
+                case 'monthly':
+                    return monthNames[now.getMonth()];
+                    
+                case 'sixmonth':
+                    const semester = now.getMonth() < 6 ? 'H1' : 'H2';
+                    return `${now.getFullYear()} ${semester}`;
+                    
+                case 'yearly':
+                    return `${now.getFullYear()}`;
+                    
+                default:
+                    return '';
+            }
+        }
+
+        function updateSectionHeaders() {
+            document.getElementById('weeklyHeader').textContent = `📅 Weekly Chores - ${getTimeframeText('weekly')}`;
+            document.getElementById('biweeklyHeader').textContent = `📆 Bi-Weekly Chores - ${getTimeframeText('biweekly')}`;
+            document.getElementById('monthlyHeader').textContent = `📋 Monthly Chores - ${getTimeframeText('monthly')}`;
+            document.getElementById('sixmonthHeader').textContent = `📊 Six-Month Chores - ${getTimeframeText('sixmonth')}`;
+            document.getElementById('yearlyHeader').textContent = `🎯 Yearly Chores - ${getTimeframeText('yearly')}`;
+        }
+
+        function updateDateInfo() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const weekNum = getWeekNumber(now);
+            document.getElementById('dateInfo').innerHTML = 
+                `<strong>${now.toLocaleDateString('en-US', options)}</strong> | Week ${weekNum} | Month ${now.getMonth() + 1}`;
+            updateSectionHeaders();
+        }
+
+        // Allow Enter key to add chores
+        document.addEventListener('DOMContentLoaded', () => {
+            ['weekly', 'biweekly', 'monthly', 'sixmonth', 'yearly'].forEach(interval => {
+                document.getElementById(`${interval}Input`).addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') addChore(interval);
+                });
+            });
+        });
+
+        // Initialize
+        checkAndResetChores();
+        updateDateInfo();
+        renderChores();
+
+        // Check for resets every hour
+        setInterval(() => {
+            checkAndResetChores();
+            updateDateInfo();
+            renderChores();
+        }, 60 * 60 * 1000);
+
+        // Update date display every minute
+        setInterval(updateDateInfo, 60 * 1000);
+    </script>
+</body>
+</html>
