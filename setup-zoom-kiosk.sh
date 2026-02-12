@@ -104,19 +104,6 @@ sleep 2
 # Start Zoom
 /usr/bin/zoom &
 
-# Wait for Zoom to start and force remove decorations
-(
-    sleep 5
-    while true; do
-        # Remove decorations from all Zoom windows
-        wmctrl -l | grep -i zoom | awk '{print $1}' | while read -r WIN_ID; do
-            wmctrl -i -r "$WIN_ID" -b add,maximized_vert,maximized_horz
-            xprop -id "$WIN_ID" -f _MOTIF_WM_HINTS 32c -set _MOTIF_WM_HINTS "0x2, 0x0, 0x0, 0x0, 0x0"
-        done
-        sleep 2
-    done
-) &
-
 # Watchdog to ensure Zoom main window is always visible
 (
     sleep 15  # Wait for Zoom to fully start
@@ -261,10 +248,6 @@ perl -i -pe 's|</keyboard>|  <keybind key="C-A-t">
   </keybind>
 </keyboard>|' "$USER_HOME/.config/openbox/rc.xml"
 
-# Disable window decorations globally for kiosk mode
-perl -i -pe 's|<keepBorder>.*</keepBorder>|<keepBorder>no</keepBorder>|' "$USER_HOME/.config/openbox/rc.xml"
-perl -i -pe 's|<theme>|<theme>\n    <titleLayout></titleLayout>|' "$USER_HOME/.config/openbox/rc.xml" || true
-
 # Add Zoom-specific window rules for kiosk behavior
 echo -e "${GREEN}[7/8] Configuring Zoom window rules...${NC}"
 
@@ -273,14 +256,8 @@ perl -i -pe 's|</openbox_config>|  <applications>
     <application class="zoom">
       <!-- Force maximized state -->
       <maximized>yes</maximized>
-      <!-- Remove window decorations -->
-      <decor>no</decor>
       <!-- Always focus Zoom windows -->
       <focus>yes</focus>
-    </application>
-    <application class="*">
-      <!-- Remove decorations from all windows -->
-      <decor>no</decor>
     </application>
   </applications>
 </openbox_config>|' "$USER_HOME/.config/openbox/rc.xml" 2>/dev/null || true
