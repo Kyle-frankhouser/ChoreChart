@@ -62,7 +62,8 @@ DEBIAN_FRONTEND=noninteractive apt install -y \
     unclutter \
     wget \
     unattended-upgrades \
-    pulseaudio
+    pulseaudio \
+    wmctrl
 
 ###############################################################################
 # Step 2: Download and install Zoom
@@ -100,6 +101,16 @@ sleep 2
 
 # Start Zoom
 /usr/bin/zoom &
+
+# Watchdog to restart Zoom if it closes (prevents black screen)
+(
+    while true; do
+        sleep 10
+        if ! pgrep -x "zoom" > /dev/null; then
+            /usr/bin/zoom &
+        fi
+    done
+) &
 EOF
 
 chmod +x "$USER_HOME/.config/openbox/autostart"
@@ -201,6 +212,24 @@ fi
 # Using a more robust approach with perl for multi-line XML blocks
 perl -i -0pe 's/<keybind key="A-F4">.*?<\/keybind>//gs' "$USER_HOME/.config/openbox/rc.xml"
 perl -i -0pe 's/<keybind key="C-A-Delete">.*?<\/keybind>//gs' "$USER_HOME/.config/openbox/rc.xml"
+
+# Add Zoom-specific window rules for kiosk behavior
+echo -e "${GREEN}[7/8] Configuring Zoom window rules...${NC}"
+
+# Insert Zoom application rules before closing </openbox_config> tag
+perl -i -pe 's|</openbox_config>|  <applications>
+    <application name="zoom">
+      <!-- Force maximized state -->
+      <maximized>yes</maximized>
+      <!-- Remove window decorations (no minimize/maximize/close buttons) -->
+      <decor>no</decor>
+      <!-- Always focus Zoom windows -->
+      <focus>yes</focus>
+      <!-- Keep Zoom on top -->
+      <layer>above</layer>
+    </application>
+  </applications>
+</openbox_config>|' "$USER_HOME/.config/openbox/rc.xml" 2>/dev/null || true
 
 ###############################################################################
 # Step 8: Enable SSH for remote management
