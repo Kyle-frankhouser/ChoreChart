@@ -112,6 +112,22 @@ sleep 2
         fi
     done
 ) &
+
+# Watchdog to auto-restore minimized Zoom windows
+(
+    sleep 15  # Wait for Zoom to fully start
+    while true; do
+        sleep 3
+        # Find minimized Zoom windows and restore them
+        wmctrl -l | grep -i zoom | while read -r line; do
+            WIN_ID=$(echo "$line" | awk '{print $1}')
+            # Check if window is minimized and restore + maximize it
+            xprop -id "$WIN_ID" | grep -q "_NET_WM_STATE_HIDDEN" && \
+                wmctrl -i -r "$WIN_ID" -b remove,hidden && \
+                wmctrl -i -r "$WIN_ID" -b add,maximized_vert,maximized_horz
+        done
+    done
+) &
 EOF
 
 chmod +x "$USER_HOME/.config/openbox/autostart"
@@ -214,28 +230,40 @@ fi
 perl -i -0pe 's/<keybind key="A-F4">.*?<\/keybind>//gs' "$USER_HOME/.config/openbox/rc.xml"
 perl -i -0pe 's/<keybind key="C-A-Delete">.*?<\/keybind>//gs' "$USER_HOME/.config/openbox/rc.xml"
 
-# Add keybinding for terminal (Ctrl+Alt+T)
+# Add keybinding for terminal (Ctrl+Alt+T) and window restore (Super+Up)
 perl -i -pe 's|</keyboard>|  <keybind key="C-A-t">
     <action name="Execute">
       <command>xterm -maximized -fa "Monospace" -fs 12</command>
     </action>
   </keybind>
+  <keybind key="W-Up">
+    <action name="Maximize"/>
+  </keybind>
+  <keybind key="W-Return">
+    <action name="ToggleMaximize"/>
+  </keybind>
 </keyboard>|' "$USER_HOME/.config/openbox/rc.xml"
+
+# Disable window decorations globally for kiosk mode
+perl -i -pe 's|<keepBorder>.*</keepBorder>|<keepBorder>no</keepBorder>|' "$USER_HOME/.config/openbox/rc.xml"
+perl -i -pe 's|<theme>|<theme>\n    <titleLayout></titleLayout>|' "$USER_HOME/.config/openbox/rc.xml" || true
 
 # Add Zoom-specific window rules for kiosk behavior
 echo -e "${GREEN}[7/8] Configuring Zoom window rules...${NC}"
 
 # Insert Zoom application rules before closing </openbox_config> tag
 perl -i -pe 's|</openbox_config>|  <applications>
-    <application name="zoom">
+    <application class="zoom">
       <!-- Force maximized state -->
       <maximized>yes</maximized>
-      <!-- Remove window decorations (no minimize/maximize/close buttons) -->
+      <!-- Remove window decorations -->
       <decor>no</decor>
       <!-- Always focus Zoom windows -->
       <focus>yes</focus>
-      <!-- Keep Zoom on top -->
-      <layer>above</layer>
+    </application>
+    <application class="*">
+      <!-- Remove decorations from all windows -->
+      <decor>no</decor>
     </application>
   </applications>
 </openbox_config>|' "$USER_HOME/.config/openbox/rc.xml" 2>/dev/null || true
@@ -282,6 +310,7 @@ echo "  Check system errors: cat ~/.xsession-errors"
 echo ""
 echo -e "${YELLOW}Local Access:${NC}"
 echo "  Open terminal in kiosk: Press Ctrl+Alt+T"
+echo "  Restore/maximize window: Press Super+Up or Super+Enter"
 echo "  Switch to text console: Press Ctrl+Alt+F2 (F1 to return)"
 echo ""
 echo -e "${GREEN}Reboot now? (y/n)${NC}"
