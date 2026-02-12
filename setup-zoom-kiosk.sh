@@ -64,7 +64,8 @@ DEBIAN_FRONTEND=noninteractive apt install -y \
     unattended-upgrades \
     pulseaudio \
     wmctrl \
-    xterm
+    xterm \
+    x11-utils
 
 ###############################################################################
 # Step 2: Download and install Zoom
@@ -103,29 +104,45 @@ sleep 2
 # Start Zoom
 /usr/bin/zoom &
 
-# Watchdog to restart Zoom if it closes (prevents black screen)
+# Wait for Zoom to start and force remove decorations
 (
+    sleep 5
     while true; do
-        sleep 10
-        if ! pgrep -x "zoom" > /dev/null; then
-            /usr/bin/zoom &
-        fi
+        # Remove decorations from all Zoom windows
+        wmctrl -l | grep -i zoom | awk '{print $1}' | while read -r WIN_ID; do
+            wmctrl -i -r "$WIN_ID" -b add,maximized_vert,maximized_horz
+            xprop -id "$WIN_ID" -f _MOTIF_WM_HINTS 32c -set _MOTIF_WM_HINTS "0x2, 0x0, 0x0, 0x0, 0x0"
+        done
+        sleep 2
     done
 ) &
 
-# Watchdog to auto-restore minimized Zoom windows
+# Watchdog to ensure Zoom main window is always visible
 (
     sleep 15  # Wait for Zoom to fully start
     while true; do
         sleep 3
-        # Find minimized Zoom windows and restore them
-        wmctrl -l | grep -i zoom | while read -r line; do
-            WIN_ID=$(echo "$line" | awk '{print $1}')
-            # Check if window is minimized and restore + maximize it
-            xprop -id "$WIN_ID" | grep -q "_NET_WM_STATE_HIDDEN" && \
-                wmctrl -i -r "$WIN_ID" -b remove,hidden && \
-                wmctrl -i -r "$WIN_ID" -b add,maximized_vert,maximized_horz
-        done
+        # Check if Zoom process is running
+        if pgrep -x "zoom" > /dev/null; then
+            # Check if there's a visible Zoom window
+            if ! wmctrl -l | grep -qi zoom; then
+                # No visible window - Zoom is in tray, kill and restart it
+                pkill -9 zoom
+                sleep 1
+                /usr/bin/zoom &
+            else
+                # Ensure visible windows are maximized and unminimized
+                wmctrl -l | grep -i zoom | while read -r line; do
+                    WIN_ID=$(echo "$line" | awk '{print $1}')
+                    # Restore if hidden/minimized
+                    wmctrl -i -r "$WIN_ID" -b remove,hidden
+                    wmctrl -i -r "$WIN_ID" -b add,maximized_vert,maximized_horz
+                done
+            fi
+        else
+            # Zoom process not running at all, restart it
+            /usr/bin/zoom &
+        fi
     done
 ) &
 EOF
