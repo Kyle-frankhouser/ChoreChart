@@ -63,7 +63,8 @@ DEBIAN_FRONTEND=noninteractive apt install -y \
     wget \
     unattended-upgrades \
     pulseaudio \
-    wmctrl
+    wmctrl \
+    xterm
 
 ###############################################################################
 # Step 2: Download and install Zoom
@@ -213,6 +214,14 @@ fi
 perl -i -0pe 's/<keybind key="A-F4">.*?<\/keybind>//gs' "$USER_HOME/.config/openbox/rc.xml"
 perl -i -0pe 's/<keybind key="C-A-Delete">.*?<\/keybind>//gs' "$USER_HOME/.config/openbox/rc.xml"
 
+# Add keybinding for terminal (Ctrl+Alt+T)
+perl -i -pe 's|</keyboard>|  <keybind key="C-A-t">
+    <action name="Execute">
+      <command>xterm -maximized -fa "Monospace" -fs 12</command>
+    </action>
+  </keybind>
+</keyboard>|' "$USER_HOME/.config/openbox/rc.xml"
+
 # Add Zoom-specific window rules for kiosk behavior
 echo -e "${GREEN}[7/8] Configuring Zoom window rules...${NC}"
 
@@ -270,6 +279,10 @@ echo -e "${YELLOW}Maintenance Commands:${NC}"
 echo "  Check update logs: cat /var/log/unattended-upgrades/unattended-upgrades.log"
 echo "  Force update check: sudo unattended-upgrade -d"
 echo "  Check system errors: cat ~/.xsession-errors"
+echo ""
+echo -e "${YELLOW}Local Access:${NC}"
+echo "  Open terminal in kiosk: Press Ctrl+Alt+T"
+echo "  Switch to text console: Press Ctrl+Alt+F2 (F1 to return)"
 echo ""
 echo -e "${GREEN}Reboot now? (y/n)${NC}"
 read -p "" -n 1 -r
