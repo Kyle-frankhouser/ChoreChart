@@ -197,9 +197,10 @@ if [ ! -f "$USER_HOME/.config/openbox/rc.xml" ]; then
     chown "$ACTUAL_USER:$ACTUAL_USER" "$USER_HOME/.config/openbox/rc.xml"
 fi
 
-# Comment out dangerous keybindings
-sed -i 's/<keybind key="A-F4">/<!-- <keybind key="A-F4"> -->/g' "$USER_HOME/.config/openbox/rc.xml"
-sed -i 's/<keybind key="C-A-Delete">/<!-- <keybind key="C-A-Delete"> -->/g' "$USER_HOME/.config/openbox/rc.xml"
+# Remove dangerous keybindings (Alt+F4 and Ctrl+Alt+Delete)
+# Using a more robust approach with perl for multi-line XML blocks
+perl -i -0pe 's/<keybind key="A-F4">.*?<\/keybind>//gs' "$USER_HOME/.config/openbox/rc.xml"
+perl -i -0pe 's/<keybind key="C-A-Delete">.*?<\/keybind>//gs' "$USER_HOME/.config/openbox/rc.xml"
 
 ###############################################################################
 # Step 8: Enable SSH for remote management
