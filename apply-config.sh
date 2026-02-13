@@ -188,6 +188,51 @@ if [ -n "$bg_options" ] && [ "$bg_options" != "null" ]; then
     gsettings set org.cinnamon.desktop.background picture-options "$bg_options"
 fi
 
+# Panel configuration
+panels_height=$(jq -r '.cinnamon.panels.height?' "$CONFIG_FILE")
+if [ -n "$panels_height" ] && [ "$panels_height" != "null" ]; then
+    gsettings set org.cinnamon panels-height "$panels_height"
+    echo -e "${GREEN}✓ Panel height configured${NC}"
+fi
+
+panels_autohide=$(jq -r '.cinnamon.panels.autohide?' "$CONFIG_FILE")
+if [ -n "$panels_autohide" ] && [ "$panels_autohide" != "null" ]; then
+    gsettings set org.cinnamon panels-autohide "$panels_autohide"
+    echo -e "${GREEN}✓ Panel autohide configured${NC}"
+fi
+
+show_delay=$(jq -r '.cinnamon.panels."show-delay"?' "$CONFIG_FILE")
+if [ -n "$show_delay" ] && [ "$show_delay" != "null" ]; then
+    gsettings set org.cinnamon panels-show-delay "$show_delay"
+fi
+
+hide_delay=$(jq -r '.cinnamon.panels."hide-delay"?' "$CONFIG_FILE")
+if [ -n "$hide_delay" ] && [ "$hide_delay" != "null" ]; then
+    gsettings set org.cinnamon panels-hide-delay "$hide_delay"
+fi
+
+# Applets configuration
+readarray -t applets < <(jq -r '.cinnamon.applets."enabled-applets"[]?' "$CONFIG_FILE")
+if [ ${#applets[@]} -gt 0 ]; then
+    # Build the applets array
+    applets_str="["
+    first=true
+    for applet in "${applets[@]}"; do
+        if [ -n "$applet" ]; then
+            if [ "$first" = false ]; then
+                applets_str+=", "
+            fi
+            applets_str+="'$applet'"
+            first=false
+        fi
+    done
+    applets_str+="]"
+    
+    # Apply the applets configuration
+    gsettings set org.cinnamon enabled-applets "$applets_str"
+    echo -e "${GREEN}✓ Panel applets configured (${#applets[@]} applets)${NC}"
+fi
+
 echo -e "${GREEN}✓ Cinnamon settings applied${NC}"
 
 # ============================================================================

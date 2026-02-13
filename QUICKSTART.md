@@ -43,6 +43,7 @@ cd backup_YYYYMMDD_HHMMSS
 |--------|---------|
 | **generate-config.sh** | Generate JSON from current system |
 | **apply-config.sh** | Apply JSON config to system |
+| **view-panel-layout.sh** | Visualize panel configuration |
 | **system-config.json** | Declarative system definition |
 
 ---

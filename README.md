@@ -46,6 +46,7 @@ The enhanced backup script saves:
 
 ### Desktop Environment
 - **Cinnamon Settings**: Desktop configuration, panels, applets, extensions, themes
+- **Panel Layout**: Complete panel and applet configuration (positions, zones, order)
 - **Nemo Settings**: File manager preferences
 - **GTK Themes**: GTK 2.0, 3.0, and 4.0 theme settings
 - **Custom Themes & Icons**: User-installed themes and icon packs

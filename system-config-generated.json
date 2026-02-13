@@ -63,12 +63,42 @@
     "extensions": [
       "transparent-panels@germanfr"
     ],
+    "panels": {
+      "enabled-panels": [
+        "1:0:bottom"
+      ],
+      "height": [
+        "1:40",
+        "2:40"
+      ],
+      "autohide": [
+        "1:intel",
+        "2:false"
+      ],
+      "show-delay": [
+        "1:0",
+        "2:0"
+      ],
+      "hide-delay": [
+        "1:0",
+        "2:0"
+      ]
+    },
     "applets": {
-      "panel1": {
-        "left": [],
-        "center": [],
-        "right": []
-      }
+      "enabled-applets": [
+        "panel1:center:0:menu@cinnamon.org:0",
+        "panel1:left:2:separator@cinnamon.org:1",
+        "panel1:center:1:grouped-window-list@cinnamon.org:2",
+        "panel1:right:0:systray@cinnamon.org:3",
+        "panel1:right:1:xapp-status@cinnamon.org:4",
+        "panel1:right:2:notifications@cinnamon.org:5",
+        "panel1:right:3:printers@cinnamon.org:6",
+        "panel1:right:7:network@cinnamon.org:10",
+        "panel1:right:8:sound@cinnamon.org:11",
+        "panel1:right:9:power@cinnamon.org:12",
+        "panel1:right:10:calendar@cinnamon.org:13",
+        "panel2:right:0:windows-quick-list@cinnamon.org:15"
+      ]
     }
   },
   "nemo": {

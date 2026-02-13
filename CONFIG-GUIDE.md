@@ -26,6 +26,7 @@ A single JSON file that defines:
 - Packages to install (APT, Flatpak, Snap)
 - PPAs and repositories
 - Cinnamon desktop settings (themes, panels, workspaces)
+- **Panel layout and applets** (position, order, zones)
 - Nemo file manager settings
 - Terminal colors and fonts
 - GTK themes and bookmarks
@@ -34,6 +35,8 @@ A single JSON file that defines:
 - System performance tweaks
 
 **Portable Variables**: Use `{HOME}` and `{USER}` placeholders for user-specific paths - they're automatically expanded when applied. See [VARIABLES.md](VARIABLES.md) for details.
+
+**Panel Configuration**: Full panel and applet layout support - move your menu to center, rearrange applets, adjust panel height. See [PANELS.md](PANELS.md) for details.
 
 ### Apply Script ([apply-config.sh](apply-config.sh))
 Reads the JSON and applies all settings:

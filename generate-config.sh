@@ -204,13 +204,48 @@ fi
 echo "" >> "$OUTPUT_FILE"
 echo "    ]," >> "$OUTPUT_FILE"
 
-# Applets (simplified - just note structure exists)
+# Panel configuration
+echo "    \"panels\": {" >> "$OUTPUT_FILE"
+
+# Convert gsettings arrays to JSON arrays (single quotes to double quotes)
+panels_enabled=$(gsettings get org.cinnamon panels-enabled | sed "s/'/\"/g")
+panels_height=$(gsettings get org.cinnamon panels-height 2>/dev/null | sed "s/'/\"/g" || echo '[]')
+panels_autohide=$(gsettings get org.cinnamon panels-autohide 2>/dev/null | sed "s/'/\"/g" || echo '[]')
+panels_show=$(gsettings get org.cinnamon panels-show-delay 2>/dev/null | sed "s/'/\"/g" || echo '[]')
+panels_hide=$(gsettings get org.cinnamon panels-hide-delay 2>/dev/null | sed "s/'/\"/g" || echo '[]')
+
+cat >> "$OUTPUT_FILE" << EOF
+      "enabled-panels": $panels_enabled,
+      "height": $panels_height,
+      "autohide": $panels_autohide,
+      "show-delay": $panels_show,
+      "hide-delay": $panels_hide
+EOF
+
+echo "    }," >> "$OUTPUT_FILE"
+
+# Applets configuration
 echo "    \"applets\": {" >> "$OUTPUT_FILE"
-echo "      \"panel1\": {" >> "$OUTPUT_FILE"
-echo "        \"left\": []," >> "$OUTPUT_FILE"
-echo "        \"center\": []," >> "$OUTPUT_FILE"
-echo "        \"right\": []" >> "$OUTPUT_FILE"
-echo "      }" >> "$OUTPUT_FILE"
+echo "      \"enabled-applets\": [" >> "$OUTPUT_FILE"
+
+# Get and parse enabled-applets
+enabled_applets=$(gsettings get org.cinnamon enabled-applets)
+# Remove brackets and split by comma
+enabled_applets=$(echo "$enabled_applets" | sed "s/^\[//; s/\]$//")
+
+first=true
+while IFS= read -r line; do
+    # Remove quotes and whitespace
+    applet=$(echo "$line" | sed "s/^[[:space:]]*'//; s/'[[:space:]]*$//; s/'[[:space:]]*,[[:space:]]*$//")
+    if [ -n "$applet" ]; then
+        if [ "$first" = false ]; then echo "," >> "$OUTPUT_FILE"; fi
+        echo -n "        \"$applet\"" >> "$OUTPUT_FILE"
+        first=false
+    fi
+done <<< "$(echo "$enabled_applets" | tr ',' '\n')"
+
+echo "" >> "$OUTPUT_FILE"
+echo "      ]" >> "$OUTPUT_FILE"
 echo "    }" >> "$OUTPUT_FILE"
 echo "  }," >> "$OUTPUT_FILE"
 
