@@ -67,6 +67,25 @@
     "extensions": [
       "_comment: List enabled Cinnamon extensions here (from ~/.local/share/cinnamon/extensions/)"
     ],
+    "keybindings": {
+      "media-keys": {
+        "_comment": "Media and system keyboard shortcuts",
+        "screensaver": ["<Super>l", "XF86ScreenSaver"],
+        "home": ["<Super>e", "XF86Explorer"],
+        "terminal": ["<Primary><Alt>t"],
+        "area-screenshot": ["<Shift>Print"],
+        "area-screenshot-clip": ["<Control><Shift>Print"]
+      },
+      "wm": {
+        "_comment": "Window manager keyboard shortcuts",
+        "close": ["<Alt>F4"],
+        "panel-run-dialog": ["<Alt>F2"],
+        "push-tile-left": ["<Super>Left"],
+        "push-tile-right": ["<Super>Right"],
+        "push-tile-up": ["<Super>Up"],
+        "push-tile-down": ["<Super>Down"]
+      }
+    },
     "panels": {
       "enabled-panels": [
         "1:0:bottom"

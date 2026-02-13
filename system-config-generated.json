@@ -65,6 +65,266 @@
     "extensions": [
       "transparent-panels@germanfr"
     ],
+    "keybindings": {
+      "media-keys": {
+        "area-screenshot": [
+          "<Shift>Print"
+        ],
+        "area-screenshot-clip": [
+          "<Control><Shift>Print"
+        ],
+        "audio-forward": [
+          "XF86AudioForward"
+        ],
+        "audio-random": [
+          "XF86AudioRandomPlay"
+        ],
+        "audio-repeat": [
+          "XF86AudioRepeat"
+        ],
+        "audio-rewind": [
+          "XF86AudioRewind"
+        ],
+        "battery": [
+          "XF86Battery"
+        ],
+        "calculator": [
+          "XF86Calculator"
+        ],
+        "eject": [
+          "XF86Eject"
+        ],
+        "email": [
+          "XF86Mail"
+        ],
+        "hibernate": [
+          "XF86Suspend",
+          "XF86Hibernate"
+        ],
+        "home": [
+          "<Super>e",
+          "XF86Explorer"
+        ],
+        "kbd-brightness-down": [
+          "XF86KbdBrightnessDown"
+        ],
+        "kbd-brightness-toggle": [
+          "XF86KbdLightOnOff"
+        ],
+        "kbd-brightness-up": [
+          "XF86KbdBrightnessUp"
+        ],
+        "logout": [
+          "<Control><Alt>Delete"
+        ],
+        "media": [
+          "XF86AudioMedia"
+        ],
+        "mic-mute": [
+          "XF86AudioMicMute"
+        ],
+        "mute-quiet": [
+          "<Alt>XF86AudioMute"
+        ],
+        "next": [
+          "XF86AudioNext"
+        ],
+        "pause": [
+          "XF86AudioPause"
+        ],
+        "play": [
+          "XF86AudioPlay"
+        ],
+        "previous": [
+          "XF86AudioPrev"
+        ],
+        "restart-cinnamon": [
+          "<Control><Alt>Escape"
+        ],
+        "screen-brightness-down": [
+          "XF86MonBrightnessDown"
+        ],
+        "screen-brightness-up": [
+          "XF86MonBrightnessUp"
+        ],
+        "screenreader": [
+          "<Alt><Super>s"
+        ],
+        "screensaver": [
+          "<Super>l",
+          "XF86ScreenSaver"
+        ],
+        "screenshot": [
+          "Print"
+        ],
+        "screenshot-clip": [
+          "<Control>Print"
+        ],
+        "search": [
+          "XF86Search"
+        ],
+        "shutdown": [
+          "<Control><Alt>End",
+          "XF86PowerOff"
+        ],
+        "stop": [
+          "XF86AudioStop"
+        ],
+        "suspend": [
+          "XF86Sleep"
+        ],
+        "terminal": [
+          "<Primary><Alt>t"
+        ],
+        "touchpad-off": [
+          "XF86TouchpadOff"
+        ],
+        "touchpad-on": [
+          "XF86TouchpadOn"
+        ],
+        "touchpad-toggle": [
+          "XF86TouchpadToggle"
+        ],
+        "video-rotation-lock": [
+          "<Super>o"
+        ],
+        "volume-down": [
+          "XF86AudioLowerVolume"
+        ],
+        "volume-down-quiet": [
+          "<Alt>XF86AudioLowerVolume"
+        ],
+        "volume-mute": [
+          "XF86AudioMute"
+        ],
+        "volume-up": [
+          "XF86AudioRaiseVolume"
+        ],
+        "volume-up-quiet": [
+          "<Alt>XF86AudioRaiseVolume"
+        ],
+        "window-screenshot": [
+          "<Alt>Print"
+        ],
+        "window-screenshot-clip": [
+          "<Control><Alt>Print"
+        ],
+        "www": [
+          "XF86WWW"
+        ]
+      },
+      "wm": {
+        "activate-window-menu": [
+          "<Alt>space"
+        ],
+        "begin-move": [
+          "<Alt>F7"
+        ],
+        "begin-resize": [
+          "<Alt>F8"
+        ],
+        "close": [
+          "<Alt>F4"
+        ],
+        "move-to-monitor-down": [
+          "<Super><Shift>Down"
+        ],
+        "move-to-monitor-left": [
+          "<Super><Shift>Left"
+        ],
+        "move-to-monitor-right": [
+          "<Super><Shift>Right"
+        ],
+        "move-to-monitor-up": [
+          "<Super><Shift>Up"
+        ],
+        "move-to-workspace-down": [
+          "<Control><Shift><Alt>Down"
+        ],
+        "move-to-workspace-left": [
+          "<Control><Shift><Alt>Left"
+        ],
+        "move-to-workspace-right": [
+          "<Control><Shift><Alt>Right"
+        ],
+        "move-to-workspace-up": [
+          "<Control><Shift><Alt>Up"
+        ],
+        "panel-run-dialog": [
+          "<Alt>F2"
+        ],
+        "push-tile-down": [
+          "<Super>Down"
+        ],
+        "push-tile-left": [
+          "<Super>Left"
+        ],
+        "push-tile-right": [
+          "<Super>Right"
+        ],
+        "push-tile-up": [
+          "<Super>Up"
+        ],
+        "rotate-monitor": [
+          "XF86RotateWindows"
+        ],
+        "show-desktop": [
+          "<Super>d"
+        ],
+        "switch-group": [
+          "<Alt>Above_Tab"
+        ],
+        "switch-group-backward": [
+          "<Shift><Alt>Above_Tab"
+        ],
+        "switch-input-source": [
+          "<Super>space",
+          "XF86Keyboard"
+        ],
+        "switch-input-source-backward": [
+          "<Shift><Super>space",
+          "<Shift>XF86Keyboard"
+        ],
+        "switch-monitor": [
+          "<Super>p",
+          "XF86Display"
+        ],
+        "switch-panels": [
+          "<Control><Alt>Tab"
+        ],
+        "switch-panels-backward": [
+          "<Shift><Control><Alt>Tab"
+        ],
+        "switch-to-workspace-down": [
+          "<Control><Alt>Down"
+        ],
+        "switch-to-workspace-left": [
+          "<Control><Alt>Left"
+        ],
+        "switch-to-workspace-right": [
+          "<Control><Alt>Right"
+        ],
+        "switch-to-workspace-up": [
+          "<Control><Alt>Up",
+          "<Alt>F1"
+        ],
+        "switch-windows": [
+          "<Alt>Tab"
+        ],
+        "switch-windows-backward": [
+          "<Shift><Alt>Tab"
+        ],
+        "toggle-maximized": [
+          "<Alt>F10"
+        ],
+        "toggle-recording": [
+          "<Control><Shift><Alt>r"
+        ],
+        "unmaximize": [
+          "<Alt>F5"
+        ]
+      }
+    },
     "panels": {
       "enabled-panels": [
         "1:0:bottom"

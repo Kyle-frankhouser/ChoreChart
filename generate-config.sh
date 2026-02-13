@@ -209,6 +209,44 @@ done <<< "$enabled_exts"
 echo "" >> "$OUTPUT_FILE"
 echo "    ]," >> "$OUTPUT_FILE"
 
+# Keyboard shortcuts
+echo "    \"keybindings\": {" >> "$OUTPUT_FILE"
+
+# Media keys
+echo "      \"media-keys\": {" >> "$OUTPUT_FILE"
+first=true
+for key in $(gsettings list-keys org.cinnamon.desktop.keybindings.media-keys 2>/dev/null); do
+    val=$(gsettings get org.cinnamon.desktop.keybindings.media-keys "$key" 2>/dev/null)
+    # Only include non-empty bindings
+    if [ "$val" != "@as []" ] && [ "$val" != "['']" ] && [ -n "$val" ]; then
+        # Convert gsettings format to JSON
+        val_json=$(echo "$val" | sed "s/'/\"/g")
+        if [ "$first" = false ]; then echo "," >> "$OUTPUT_FILE"; fi
+        echo -n "        \"$key\": $val_json" >> "$OUTPUT_FILE"
+        first=false
+    fi
+done
+echo "" >> "$OUTPUT_FILE"
+echo "      }," >> "$OUTPUT_FILE"
+
+# Window manager keys
+echo "      \"wm\": {" >> "$OUTPUT_FILE"
+first=true
+for key in $(gsettings list-keys org.cinnamon.desktop.keybindings.wm 2>/dev/null); do
+    val=$(gsettings get org.cinnamon.desktop.keybindings.wm "$key" 2>/dev/null)
+    # Only include non-empty bindings
+    if [ "$val" != "@as []" ] && [ "$val" != "['']" ] && [ -n "$val" ]; then
+        # Convert gsettings format to JSON
+        val_json=$(echo "$val" | sed "s/'/\"/g")
+        if [ "$first" = false ]; then echo "," >> "$OUTPUT_FILE"; fi
+        echo -n "        \"$key\": $val_json" >> "$OUTPUT_FILE"
+        first=false
+    fi
+done
+echo "" >> "$OUTPUT_FILE"
+echo "      }" >> "$OUTPUT_FILE"
+echo "    }," >> "$OUTPUT_FILE"
+
 # Panel configuration
 echo "    \"panels\": {" >> "$OUTPUT_FILE"
 

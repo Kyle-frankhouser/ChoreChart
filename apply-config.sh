@@ -326,6 +326,41 @@ else
     echo -e "${YELLOW}⊘ No applet configurations to apply${NC}"
 fi
 
+# Apply keyboard shortcuts
+echo -e "${BLUE}Applying keyboard shortcuts...${NC}"
+
+# Media keys
+media_keys=$(jq -r '.cinnamon.keybindings."media-keys" | keys[]?' "$CONFIG_FILE" 2>/dev/null)
+if [ -n "$media_keys" ]; then
+    while IFS= read -r key; do
+        if [ -n "$key" ]; then
+            val=$(jq -r ".cinnamon.keybindings.\"media-keys\".\"$key\"" "$CONFIG_FILE")
+            if [ "$val" != "null" ] && [ -n "$val" ]; then
+                # Convert JSON array back to gsettings format
+                val_gsettings=$(echo "$val" | sed "s/\"/'/g")
+                gsettings set org.cinnamon.desktop.keybindings.media-keys "$key" "$val_gsettings" 2>/dev/null || true
+            fi
+        fi
+    done <<< "$media_keys"
+    echo -e "${GREEN}✓ Media key shortcuts applied${NC}"
+fi
+
+# Window manager keys
+wm_keys=$(jq -r '.cinnamon.keybindings.wm | keys[]?' "$CONFIG_FILE" 2>/dev/null)
+if [ -n "$wm_keys" ]; then
+    while IFS= read -r key; do
+        if [ -n "$key" ]; then
+            val=$(jq -r ".cinnamon.keybindings.wm.\"$key\"" "$CONFIG_FILE")
+            if [ "$val" != "null" ] && [ -n "$val" ]; then
+                # Convert JSON array back to gsettings format
+                val_gsettings=$(echo "$val" | sed "s/\"/'/g")
+                gsettings set org.cinnamon.desktop.keybindings.wm "$key" "$val_gsettings" 2>/dev/null || true
+            fi
+        fi
+    done <<< "$wm_keys"
+    echo -e "${GREEN}✓ Window manager shortcuts applied${NC}"
+fi
+
 echo -e "${GREEN}✓ Cinnamon settings applied${NC}"
 
 # ============================================================================
