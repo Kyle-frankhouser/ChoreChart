@@ -115,13 +115,17 @@ gtk_theme=$(gsettings get org.cinnamon.desktop.interface gtk-theme | tr -d "'")
 icon_theme=$(gsettings get org.cinnamon.desktop.interface icon-theme | tr -d "'")
 cursor_theme=$(gsettings get org.cinnamon.desktop.interface cursor-theme | tr -d "'")
 cursor_size=$(gsettings get org.cinnamon.desktop.interface cursor-size)
+clock_show_date=$(gsettings get org.cinnamon.desktop.interface clock-show-date)
+clock_show_seconds=$(gsettings get org.cinnamon.desktop.interface clock-show-seconds)
 
 cat >> "$OUTPUT_FILE" << EOF
         "cursor-blink-time": 1200,
         "cursor-size": $cursor_size,
         "gtk-theme": "$gtk_theme",
         "icon-theme": "$icon_theme",
-        "cursor-theme": "$cursor_theme"
+        "cursor-theme": "$cursor_theme",
+        "clock-show-date": $clock_show_date,
+        "clock-show-seconds": $clock_show_seconds
 EOF
 
 echo "      }," >> "$OUTPUT_FILE"
@@ -188,19 +192,20 @@ echo "        }" >> "$OUTPUT_FILE"
 echo "      }" >> "$OUTPUT_FILE"
 echo "    }," >> "$OUTPUT_FILE"
 
-# Extensions
+# Extensions (from enabled-extensions, not just directories)
 echo "    \"extensions\": [" >> "$OUTPUT_FILE"
-if [ -d "$HOME/.local/share/cinnamon/extensions" ]; then
-    extensions=$(ls "$HOME/.local/share/cinnamon/extensions" 2>/dev/null || true)
-    first=true
-    while IFS= read -r ext; do
-        if [ -n "$ext" ]; then
-            if [ "$first" = false ]; then echo "," >> "$OUTPUT_FILE"; fi
-            echo -n "      \"$ext\"" >> "$OUTPUT_FILE"
-            first=false
-        fi
-    done <<< "$extensions"
-fi
+enabled_exts=$(gsettings get org.cinnamon enabled-extensions 2>/dev/null || echo "[]")
+# Convert gsettings array to newline-separated list
+enabled_exts=$(echo "$enabled_exts" | sed "s/^\[//; s/\]$//; s/', '/\n/g; s/'//g")
+
+first=true
+while IFS= read -r ext; do
+    if [ -n "$ext" ] && [ "$ext" != "[]" ]; then
+        if [ "$first" = false ]; then echo "," >> "$OUTPUT_FILE"; fi
+        echo -n "      \"$ext\"" >> "$OUTPUT_FILE"
+        first=false
+    fi
+done <<< "$enabled_exts"
 echo "" >> "$OUTPUT_FILE"
 echo "    ]," >> "$OUTPUT_FILE"
 
@@ -245,7 +250,30 @@ while IFS= read -r line; do
 done <<< "$(echo "$enabled_applets" | tr ',' '\n')"
 
 echo "" >> "$OUTPUT_FILE"
-echo "      ]" >> "$OUTPUT_FILE"
+echo "      ]," >> "$OUTPUT_FILE"
+
+# Capture applet-specific configurations
+echo "      \"configs\": {" >> "$OUTPUT_FILE"
+if [ -d "$HOME/.config/cinnamon/spices" ]; then
+    first_applet=true
+    for applet_dir in "$HOME/.config/cinnamon/spices"/*; do
+        if [ -d "$applet_dir" ]; then
+            applet_name=$(basename "$applet_dir")
+            for config_file in "$applet_dir"/*.json; do
+                if [ -f "$config_file" ]; then
+                    instance_id=$(basename "$config_file" .json)
+                    if [ "$first_applet" = false ]; then echo "," >> "$OUTPUT_FILE"; fi
+                    echo -n "        \"${applet_name}:${instance_id}\": " >> "$OUTPUT_FILE"
+                    # Extract only the value fields from the config, skipping buttons and sections
+                    jq 'to_entries | map(select(.value | type == "object" and has("value") and .type != "button" and .type != "section")) | map({key: .key, value: .value.value}) | from_entries' "$config_file" >> "$OUTPUT_FILE"
+                    first_applet=false
+                fi
+            done
+        fi
+    done
+fi
+echo "" >> "$OUTPUT_FILE"
+echo "      }" >> "$OUTPUT_FILE"
 echo "    }" >> "$OUTPUT_FILE"
 echo "  }," >> "$OUTPUT_FILE"
 
@@ -382,6 +410,22 @@ echo "      \"vfs_cache_pressure\": 50," >> "$OUTPUT_FILE"
 echo "      \"inotify_max_user_watches\": 524288" >> "$OUTPUT_FILE"
 echo "    }," >> "$OUTPUT_FILE"
 echo "    \"autostart\": []" >> "$OUTPUT_FILE"
+echo "  }," >> "$OUTPUT_FILE"
+
+# Software Sources/Mirrors
+echo "  \"mirrors\": {" >> "$OUTPUT_FILE"
+if [ -f "/etc/apt/sources.list.d/official-package-repositories.list" ]; then
+    mint_mirror=$(grep "^deb.*mint/packages" /etc/apt/sources.list.d/official-package-repositories.list | head -1 | awk '{print $2}' || echo "")
+    ubuntu_mirror=$(grep "^deb.*ubuntu.*noble main" /etc/apt/sources.list.d/official-package-repositories.list | head -1 | awk '{print $2}' || echo "")
+    
+    cat >> "$OUTPUT_FILE" << EOF
+    "mint": "$mint_mirror",
+    "ubuntu": "$ubuntu_mirror"
+EOF
+else
+    echo "    \"mint\": \"\"," >> "$OUTPUT_FILE"
+    echo "    \"ubuntu\": \"\"" >> "$OUTPUT_FILE"
+fi
 echo "  }," >> "$OUTPUT_FILE"
 
 # Fonts

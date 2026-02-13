@@ -1,0 +1,189 @@
+{
+  "_comment": "This is a template configuration file. Generate your own with: ./generate-config.sh",
+  "metadata": {
+    "name": "My Linux Mint Configuration",
+    "description": "Declarative system configuration",
+    "version": "1.0",
+    "created": "2026-02-13",
+    "author": "your-username"
+  },
+  "packages": {
+    "apt": {
+      "repositories": [],
+      "packages": [
+        "git",
+        "curl",
+        "wget",
+        "build-essential",
+        "timeshift"
+      ]
+    },
+    "flatpak": {
+      "enable": true,
+      "packages": []
+    },
+    "snap": {
+      "enable": false,
+      "packages": []
+    }
+  },
+  "cinnamon": {
+    "desktop": {
+      "interface": {
+        "cursor-blink-time": 1200,
+        "cursor-size": 24,
+        "gtk-theme": "Mint-Y-Dark",
+        "icon-theme": "Mint-Y",
+        "cursor-theme": "Adwaita",
+        "clock-show-date": true,
+        "clock-show-seconds": false,
+        "_comment": "clock-show-date and clock-show-seconds control the panel clock display"
+      },
+      "wm": {
+        "preferences": {
+          "theme": "Mint-Y",
+          "num-workspaces": 4,
+          "workspace-names": []
+        }
+      },
+      "background": {
+        "picture-uri": "file:///usr/share/backgrounds/linuxmint/default_background.jpg",
+        "picture-options": "zoom",
+        "_comment": "Use {HOME} variable for paths like: file://{HOME}/Pictures/wallpaper.jpg"
+      }
+    },
+    "settings-daemon": {
+      "peripherals": {
+        "keyboard": {
+          "delay": 500,
+          "repeat-interval": 30
+        },
+        "mouse": {
+          "double-click": 400,
+          "speed": 0.0
+        }
+      }
+    },
+    "extensions": [
+      "_comment: List enabled Cinnamon extensions here (from ~/.local/share/cinnamon/extensions/)"
+    ],
+    "panels": {
+      "enabled-panels": [
+        "1:0:bottom"
+      ],
+      "height": [
+        "1:40"
+      ],
+      "autohide": [
+        "1:false"
+      ],
+      "show-delay": [
+        "1:0"
+      ],
+      "hide-delay": [
+        "1:0"
+      ]
+    },
+    "applets": {
+      "enabled-applets": [
+        "panel1:left:0:menu@cinnamon.org:0",
+        "panel1:left:1:show-desktop@cinnamon.org:1",
+        "panel1:left:2:panel-launchers@cinnamon.org:2",
+        "panel1:left:3:window-list@cinnamon.org:4",
+        "panel1:right:0:systray@cinnamon.org:5",
+        "panel1:right:1:keyboard@cinnamon.org:7",
+        "panel1:right:2:notifications@cinnamon.org:8",
+        "panel1:right:3:removable-drives@cinnamon.org:9",
+        "panel1:right:4:network@cinnamon.org:11",
+        "panel1:right:5:sound@cinnamon.org:12",
+        "panel1:right:6:power@cinnamon.org:13",
+        "panel1:right:7:calendar@cinnamon.org:14"
+      ],
+      "_comment": "Format: panel#:zone:position:applet-name:instance-id. Use ./view-panel-layout.sh to visualize"
+    }
+  },
+  "nemo": {
+    "preferences": {
+      "default-folder-viewer": "list-view",
+      "show-hidden-files": false,
+      "show-location-entry": false,
+      "executable-text-activation": "ask"
+    },
+    "list-view": {
+      "default-visible-columns": [
+        "name",
+        "size",
+        "type",
+        "date_modified"
+      ],
+      "default-zoom-level": "standard"
+    }
+  },
+  "terminal": {
+    "profiles": {
+      "default": {
+        "background-color": "#2E3436",
+        "foreground-color": "#D3D7CF",
+        "use-system-font": true,
+        "font": "Monospace 12",
+        "cursor-shape": "block",
+        "scrollback-lines": 10000
+      }
+    }
+  },
+  "gtk": {
+    "gtk-3": {
+      "Settings": {
+        "gtk-application-prefer-dark-theme": 1,
+        "gtk-theme-name": "Mint-Y-Dark",
+        "gtk-icon-theme-name": "Mint-Y",
+        "gtk-font-name": "Sans 10",
+        "gtk-cursor-theme-name": "Adwaita",
+        "gtk-cursor-theme-size": 24
+      }
+    },
+    "bookmarks": [
+      "file://{HOME}/Documents Documents",
+      "file://{HOME}/Downloads Downloads",
+      "_comment: Use {HOME} and {USER} variables for portable paths"
+    ]
+  },
+  "applications": {
+    "vscode": {
+      "install": false,
+      "extensions": [],
+      "settings": {}
+    }
+  },
+  "git": {
+    "user": {
+      "name": "",
+      "email": ""
+    },
+    "core": {
+      "editor": "vim"
+    },
+    "init": {
+      "defaultBranch": "main"
+    },
+    "pull": {
+      "rebase": false
+    }
+  },
+  "mirrors": {
+    "mint": "http://packages.linuxmint.com",
+    "ubuntu": "http://archive.ubuntu.com",
+    "_comment": "Software update mirrors. Leave empty to keep current mirrors."
+  },
+  "system": {
+    "tweaks": {
+      "swappiness": 10,
+      "vfs_cache_pressure": 50,
+      "inotify_max_user_watches": 524288
+    },
+    "autostart": []
+  },
+  "fonts": {
+    "download": []
+  }
+}

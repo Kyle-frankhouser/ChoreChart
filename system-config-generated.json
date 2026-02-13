@@ -34,7 +34,9 @@
         "cursor-size": 24,
         "gtk-theme": "Mint-Y-Dark-Purple",
         "icon-theme": "Mint-Y-Purple",
-        "cursor-theme": "Bibata-Modern-Classic"
+        "cursor-theme": "Bibata-Modern-Classic",
+        "clock-show-date": false,
+        "clock-show-seconds": true
       },
       "wm": {
         "preferences": {
@@ -98,7 +100,141 @@
         "panel1:right:9:power@cinnamon.org:12",
         "panel1:right:10:calendar@cinnamon.org:13",
         "panel2:right:0:windows-quick-list@cinnamon.org:15"
-      ]
+      ],
+      "configs": {
+        "calendar@cinnamon.org:13": {
+          "show-events": true,
+          "show-week-numbers": false,
+          "use-custom-format": true,
+          "custom-format": " %-m/%d/%Y    \n %-I:%M:%S %p    ",
+          "custom-tooltip-format": "%A, %b %-d %Y %-I:%M:%S %p",
+          "keyOpen": "<Super>c"
+        },
+        "grouped-window-list@cinnamon.org:2": {
+          "group-apps": true,
+          "scroll-behavior": 1,
+          "left-click-action": 2,
+          "middle-click-action": 3,
+          "show-all-workspaces": false,
+          "window-display-settings": 1,
+          "cycleMenusHotkey": "",
+          "show-apps-order-hotkey": "<Super>grave",
+          "show-apps-order-timeout": 2500,
+          "super-num-hotkeys": true,
+          "title-display": 1,
+          "launcher-animation-effect": 3,
+          "enable-window-count-badges": true,
+          "enable-notification-badges": true,
+          "enable-app-button-dragging": true,
+          "thumbnail-scroll-behavior": false,
+          "show-thumbnails": true,
+          "animate-thumbnails": false,
+          "vertical-thumbnails": false,
+          "sort-thumbnails": false,
+          "highlight-last-focused-thumbnail": true,
+          "onclick-thumbnails": false,
+          "thumbnail-timeout": 250,
+          "thumbnail-size": 6,
+          "enable-hover-peek": true,
+          "hover-peek-time-in": 300,
+          "hover-peek-time-out": 0,
+          "hover-peek-opacity": 100,
+          "show-recent": true,
+          "autostart-menu-item": false,
+          "monitor-move-all-windows": true,
+          "pinned-apps": [
+            "nemo.desktop",
+            "firefox.desktop",
+            "code.desktop",
+            "org.gnome.Terminal.desktop",
+            "WebApp-GridfinityGenerator6256.desktop"
+          ]
+        },
+        "menu@cinnamon.org:0": {
+          "overlay-key": "Super_L::Super_R",
+          "menu-custom": true,
+          "menu-icon": "start-here-symbolic",
+          "menu-icon-size": 32,
+          "menu-label": "",
+          "symbolic-category-icons": true,
+          "category-icon-size": 16,
+          "application-icon-size": 32,
+          "show-sidebar": true,
+          "show-avatar": false,
+          "show-home": false,
+          "show-desktop": true,
+          "show-documents": false,
+          "show-downloads": true,
+          "show-music": false,
+          "show-pictures": false,
+          "show-videos": false,
+          "show-bookmarks": false,
+          "system-position": "sidebar",
+          "search-position": "bottom",
+          "sidebar-icon-size": 24,
+          "sidebar-max-width": 180,
+          "show-favorites": false,
+          "show-recents": false,
+          "show-description": true,
+          "category-hover": true,
+          "enable-autoscroll": true,
+          "activate-on-hover": false,
+          "hover-delay": 0,
+          "enable-animation": false,
+          "popup-width": 797.8316040039062,
+          "popup-height": 684.0834045410156
+        },
+        "network@cinnamon.org:network@cinnamon.org": {
+          "keyOpen": "<Shift><Super>n"
+        },
+        "notifications@cinnamon.org:notifications@cinnamon.org": {
+          "ignoreTransientNotifications": true,
+          "showEmptyTray": false,
+          "showNotificationCount": true,
+          "showNewestFirst": false,
+          "keyOpen": "<Super>n",
+          "keyClear": "<Shift><Super>c"
+        },
+        "power@cinnamon.org:power@cinnamon.org": {
+          "labelinfo": "nothing",
+          "showmulti": false
+        },
+        "printers@cinnamon.org:6": {
+          "show-icon": "printers"
+        },
+        "sound@cinnamon.org:sound@cinnamon.org": {
+          "playerControl": true,
+          "extendedPlayerControl": false,
+          "keyOpen": "<Shift><Super>s",
+          "alwaysShowMuteInput": false,
+          "_knownPlayers": [
+            "banshee",
+            "vlc",
+            "rhythmbox",
+            "firefox"
+          ],
+          "showtrack": false,
+          "truncatetext": 30,
+          "middleClickAction": "mute",
+          "middleShiftClickAction": "in_mute",
+          "horizontalScroll": false,
+          "showalbum": false,
+          "hideSystray": true,
+          "tooltipShowVolume": true,
+          "tooltipShowPlayer": false,
+          "tooltipShowArtistTitle": false
+        },
+        "transparent-panels@germanfr:transparent-panels@germanfr": {
+          "transparency-type": "panel-transparent",
+          "theme-defined": false,
+          "opacify": false,
+          "panel-top": true,
+          "panel-right": true,
+          "panel-bottom": true,
+          "panel-left": true,
+          "first-launch": false
+        }
+      }
     }
   },
   "nemo": {
@@ -178,6 +314,10 @@
       "inotify_max_user_watches": 524288
     },
     "autostart": []
+  },
+  "mirrors": {
+    "mint": "https://mirrors.usinternet.com/mint/packages",
+    "ubuntu": "http://mirror.brightridge.com/ubuntuarchive"
   },
   "fonts": {
     "download": []

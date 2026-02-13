@@ -152,6 +152,19 @@ if [ -n "$cursor_size" ] && [ "$cursor_size" != "null" ]; then
     echo -e "${GREEN}✓ Cursor size: $cursor_size${NC}"
 fi
 
+# Clock settings
+clock_show_date=$(jq -r '.cinnamon.desktop.interface."clock-show-date"?' "$CONFIG_FILE")
+if [ -n "$clock_show_date" ] && [ "$clock_show_date" != "null" ]; then
+    gsettings set org.cinnamon.desktop.interface clock-show-date "$clock_show_date"
+    echo -e "${GREEN}✓ Clock show date: $clock_show_date${NC}"
+fi
+
+clock_show_seconds=$(jq -r '.cinnamon.desktop.interface."clock-show-seconds"?' "$CONFIG_FILE")
+if [ -n "$clock_show_seconds" ] && [ "$clock_show_seconds" != "null" ]; then
+    gsettings set org.cinnamon.desktop.interface clock-show-seconds "$clock_show_seconds"
+    echo -e "${GREEN}✓ Clock show seconds: $clock_show_seconds${NC}"
+fi
+
 # Window Manager Theme
 wm_theme=$(jq -r '.cinnamon.desktop.wm.preferences.theme?' "$CONFIG_FILE")
 if [ -n "$wm_theme" ] && [ "$wm_theme" != "null" ]; then
@@ -231,6 +244,86 @@ if [ ${#applets[@]} -gt 0 ]; then
     # Apply the applets configuration
     gsettings set org.cinnamon enabled-applets "$applets_str"
     echo -e "${GREEN}✓ Panel applets configured (${#applets[@]} applets)${NC}"
+fi
+
+# Enable Cinnamon extensions
+readarray -t extensions < <(jq -r '.cinnamon.extensions[]?' "$CONFIG_FILE")
+if [ ${#extensions[@]} -gt 0 ]; then
+    # Build extensions array
+    ext_str="["
+    first=true
+    for ext in "${extensions[@]}"; do
+        if [ -n "$ext" ]; then
+            if [ "$first" = false ]; then
+                ext_str+=", "
+            fi
+            ext_str+="'$ext'"
+            first=false
+        fi
+    done
+    ext_str+="]"
+    
+    # Apply extensions
+    gsettings set org.cinnamon enabled-extensions "$ext_str"
+    echo -e "${GREEN}✓ Cinnamon extensions enabled (${#extensions[@]} extensions)${NC}"
+fi
+
+# Apply applet-specific configurations
+echo -e "${BLUE}Applying applet configurations...${NC}"
+mkdir -p "$HOME/.config/cinnamon/spices"
+
+# Get list of applet configs from JSON
+applet_configs=$(jq -r '.cinnamon.applets.configs | keys[]?' "$CONFIG_FILE" 2>/dev/null)
+if [ -n "$applet_configs" ]; then
+    while IFS= read -r applet_key; do
+        if [ -n "$applet_key" ]; then
+            # Parse applet name and instance ID
+            applet_name=$(echo "$applet_key" | cut -d':' -f1)
+            instance_id=$(echo "$applet_key" | cut -d':' -f2)
+            
+            # Get the config values from JSON
+            config_values=$(jq -r ".cinnamon.applets.configs.\"$applet_key\"" "$CONFIG_FILE")
+            
+            # Create applet directory
+            applet_dir="$HOME/.config/cinnamon/spices/$applet_name"
+            mkdir -p "$applet_dir"
+            
+            # If the config file already exists, merge values; otherwise create new
+            config_file="$applet_dir/${instance_id}.json"
+            if [ -f "$config_file" ]; then
+                # Read existing config and update values
+                temp_config=$(mktemp)
+                jq --argjson new "$config_values" '
+                    . as $orig |
+                    $new | to_entries | map({key: .key, value: .value}) |
+                    reduce .[] as $item ($orig;
+                        if .[$item.key] then
+                            .[$item.key].value = $item.value
+                        else
+                            .
+                        end
+                    )
+                ' "$config_file" > "$temp_config"
+                mv "$temp_config" "$config_file"
+                echo -e "${GREEN}✓ Updated config: $applet_name instance $instance_id${NC}"
+            else
+                # For new configs, we need the full schema. Try to copy from system defaults.
+                system_schema="/usr/share/cinnamon/applets/$applet_name/settings-schema.json"
+                if [ -f "$system_schema" ]; then
+                    # Build config from schema with our values
+                    temp_config=$(mktemp)
+                    jq --argjson values "$config_values" '
+                        map(if .key and $values[.key] then . + {value: $values[.key]} else . end)
+                        | map({(.key): .}) | add
+                    ' "$system_schema" > "$temp_config"
+                    mv "$temp_config" "$config_file"
+                    echo -e "${GREEN}✓ Created config: $applet_name instance $instance_id${NC}"
+                fi
+            fi
+        fi
+    done <<< "$applet_configs"
+else
+    echo -e "${YELLOW}⊘ No applet configurations to apply${NC}"
 fi
 
 echo -e "${GREEN}✓ Cinnamon settings applied${NC}"
@@ -398,9 +491,38 @@ fi
 echo -e "${GREEN}✓ Git configured${NC}"
 
 # ============================================================================
-# STEP 11: Apply System Tweaks
+# STEP 11: Configure Software Mirrors
 # ============================================================================
-echo -e "\n${BLUE}=== Step 11: Applying System Tweaks ===${NC}"
+echo -e "\n${BLUE}=== Step 11: Configuring Software Mirrors ===${NC}"
+
+mint_mirror=$(jq -r '.mirrors.mint?' "$CONFIG_FILE")
+ubuntu_mirror=$(jq -r '.mirrors.ubuntu?' "$CONFIG_FILE")
+
+if [ -n "$mint_mirror" ] && [ "$mint_mirror" != "null" ] && [ "$mint_mirror" != "" ]; then
+    if [ -f "/etc/apt/sources.list.d/official-package-repositories.list" ]; then
+        echo -e "${BLUE}Updating software mirrors...${NC}"
+        sudo cp /etc/apt/sources.list.d/official-package-repositories.list /etc/apt/sources.list.d/official-package-repositories.list.bak
+        
+        # Update Mint mirror
+        sudo sed -i "s|^deb https\?://[^ ]*/mint/packages|deb $mint_mirror|" /etc/apt/sources.list.d/official-package-repositories.list
+        echo -e "${GREEN}✓ Mint mirror: $mint_mirror${NC}"
+        
+        # Update Ubuntu mirror if specified
+        if [ -n "$ubuntu_mirror" ] && [ "$ubuntu_mirror" != "null" ] && [ "$ubuntu_mirror" != "" ]; then
+            sudo sed -i "s|^deb https\?://[^ ]*/ubuntu|deb $ubuntu_mirror/ubuntu|" /etc/apt/sources.list.d/official-package-repositories.list
+            echo -e "${GREEN}✓ Ubuntu mirror: $ubuntu_mirror${NC}"
+        fi
+        
+        sudo apt update
+    fi
+else
+    echo -e "${YELLOW}⊘ No mirror configuration specified${NC}"
+fi
+
+# ============================================================================
+# STEP 12: Apply System Tweaks
+# ============================================================================
+echo -e "\n${BLUE}=== Step 12: Applying System Tweaks ===${NC}"
 
 swappiness=$(jq -r '.system.tweaks.swappiness?' "$CONFIG_FILE")
 if [ -n "$swappiness" ] && [ "$swappiness" != "null" ]; then

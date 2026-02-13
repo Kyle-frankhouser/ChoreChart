@@ -47,6 +47,7 @@ The enhanced backup script saves:
 ### Desktop Environment
 - **Cinnamon Settings**: Desktop configuration, panels, applets, extensions, themes
 - **Panel Layout**: Complete panel and applet configuration (positions, zones, order)
+- **Applet Settings**: Individual applet customizations (calendar date/time format, menu preferences, etc.)
 - **Nemo Settings**: File manager preferences
 - **GTK Themes**: GTK 2.0, 3.0, and 4.0 theme settings
 - **Custom Themes & Icons**: User-installed themes and icon packs
@@ -360,6 +361,15 @@ chmod +x restore.sh
 - The restore script will ask for confirmation before overwriting settings
 - Your original backup files remain untouched during restore
 - Consider backing up your target computer's settings before restoring
+
+## 📚 Additional Documentation
+
+- **[CONFIG-GUIDE.md](CONFIG-GUIDE.md)** - Complete guide to configuration-as-code approach
+- **[PANELS.md](PANELS.md)** - Panel layout and applet positioning
+- **[APPLETS.md](APPLETS.md)** - Applet-specific settings (calendar, menu, etc.)
+- **[VARIABLES.md](VARIABLES.md)** - Using portable path variables
+- **[QUICKSTART.md](QUICKSTART.md)** - Quick reference card
+- **[WORKFLOW-EXAMPLE.sh](WORKFLOW-EXAMPLE.sh)** - Example workflows
 
 ## License
 

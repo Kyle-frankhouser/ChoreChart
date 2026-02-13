@@ -27,16 +27,20 @@ A single JSON file that defines:
 - PPAs and repositories
 - Cinnamon desktop settings (themes, panels, workspaces)
 - **Panel layout and applets** (position, order, zones)
+- **Applet-specific settings** (calendar date/time format, menu preferences, etc.)
 - Nemo file manager settings
 - Terminal colors and fonts
 - GTK themes and bookmarks
 - VS Code extensions and settings
 - Git configuration
 - System performance tweaks
+- Software update mirrors
 
 **Portable Variables**: Use `{HOME}` and `{USER}` placeholders for user-specific paths - they're automatically expanded when applied. See [VARIABLES.md](VARIABLES.md) for details.
 
 **Panel Configuration**: Full panel and applet layout support - move your menu to center, rearrange applets, adjust panel height. See [PANELS.md](PANELS.md) for details.
+
+**Applet Settings**: Customize individual applet behavior like calendar date/time formats, menu appearance, and more. See [APPLETS.md](APPLETS.md) for details.
 
 ### Apply Script ([apply-config.sh](apply-config.sh))
 Reads the JSON and applies all settings:
@@ -123,12 +127,20 @@ git commit -am "Added new-package"
       "interface": {
         "gtk-theme": "Mint-Y-Dark-Aqua",
         "icon-theme": "Mint-Y-Aqua",
-        "cursor-theme": "Bibata-Modern-Ice"
+        "cursor-theme": "Bibata-Modern-Ice",
+        "clock-show-date": true,
+        "clock-show-seconds": false
       }
-    }
+    },
+    "extensions": [
+      "transparent-panels@germanfr",
+      "sound150@claudiux"
+    ]
   }
 }
 ```
+**Clock Settings**: `clock-show-date` and `clock-show-seconds` control the panel clock display.  
+**Extensions**: Lists enabled Cinnamon extensions (from `~/.local/share/cinnamon/extensions/`)
 
 ### Terminal Colors
 ```json
@@ -191,6 +203,17 @@ git commit -am "Added new-package"
   }
 }
 ```
+
+### Software Mirrors
+```json
+{
+  "mirrors": {
+    "mint": "https://mirrors.kernel.org/linuxmint/packages",
+    "ubuntu": "http://archive.ubuntu.com"
+  }
+}
+```
+**Note**: Mirrors are applied during `apply-config.sh` and affect software update sources. Leave empty to keep current mirrors.
 
 ---
 
