@@ -1,0 +1,155 @@
+{
+  "metadata": {
+    "name": "My Linux Mint Configuration",
+    "description": "Declarative system configuration",
+    "version": "1.0",
+    "created": "2026-02-13",
+    "author": "kyle"
+  },
+  "packages": {
+    "apt": {
+      "repositories": [],
+      "packages": [
+        "build-essential",
+        "code",
+        "curl",
+        "git",
+        "timeshift",
+        "wget"
+      ]
+    },
+    "flatpak": {
+      "enable": true,
+      "packages": []
+    },
+    "snap": {
+      "enable": false,
+      "packages": []
+    }
+  },
+  "cinnamon": {
+    "desktop": {
+      "interface": {
+        "cursor-blink-time": 1200,
+        "cursor-size": 24,
+        "gtk-theme": "Mint-Y-Dark-Purple",
+        "icon-theme": "Mint-Y-Purple",
+        "cursor-theme": "Bibata-Modern-Classic"
+      },
+      "wm": {
+        "preferences": {
+          "theme": "Mint-Y",
+          "num-workspaces": 3,
+          "workspace-names": []
+        }
+      },
+      "background": {
+        "picture-uri": "file:///usr/share/backgrounds/linuxmint-wallpapers/porioni_black.jpg",
+        "picture-options": "zoom"
+      }
+    },
+    "settings-daemon": {
+      "peripherals": {
+        "keyboard": {
+          "delay": 250,
+          "repeat-interval": 30
+        },
+        "mouse": {
+          "double-click": 400,
+          "speed": 0.0
+        }
+      }
+    },
+    "extensions": [
+      "transparent-panels@germanfr"
+    ],
+    "applets": {
+      "panel1": {
+        "left": [],
+        "center": [],
+        "right": []
+      }
+    }
+  },
+  "nemo": {
+    "preferences": {
+      "default-folder-viewer": "icon-view",
+      "show-hidden-files": true,
+      "show-location-entry": false,
+      "executable-text-activation": "ask"
+    },
+    "list-view": {
+      "default-visible-columns": [
+        "name",
+        "size",
+        "type",
+        "date_modified"
+      ],
+      "default-zoom-level": "standard"
+    }
+  },
+  "terminal": {
+    "profiles": {
+      "default": {
+        "background-color": "#2E3440",
+        "foreground-color": "#D8DEE9",
+        "use-system-font": false,
+        "font": "Monospace 11",
+        "cursor-shape": "block",
+        "scrollback-lines": 10000
+      }
+    }
+  },
+  "gtk": {
+    "gtk-3": {
+      "Settings": {
+        "gtk-application-prefer-dark-theme": 1,
+        "gtk-theme-name": "Mint-Y-Dark-Purple",
+        "gtk-icon-theme-name": "Mint-Y-Purple",
+        "gtk-font-name": "Sans 10",
+        "gtk-cursor-theme-name": "Bibata-Modern-Classic",
+        "gtk-cursor-theme-size": 24
+      }
+    },
+    "bookmarks": [
+      "file://{HOME}/Applications Applications",
+      "file://{HOME}/Documents Documents",
+      "file://{HOME}/Downloads Downloads"
+    ]
+  },
+  "applications": {
+    "vscode": {
+      "install": true,
+      "extensions": [
+        "github.copilot-chat"
+      ],
+      "settings": {}
+    }
+  },
+  "git": {
+    "user": {
+      "name": "",
+      "email": ""
+    },
+    "core": {
+      "editor": "vim"
+    },
+    "init": {
+      "defaultBranch": "main"
+    },
+    "pull": {
+      "rebase": false
+    }
+  },
+  "system": {
+    "tweaks": {
+      "swappiness": 10,
+      "vfs_cache_pressure": 50,
+      "inotify_max_user_watches": 524288
+    },
+    "autostart": []
+  },
+  "fonts": {
+    "download": []
+  }
+}
